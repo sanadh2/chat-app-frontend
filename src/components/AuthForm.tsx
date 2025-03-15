@@ -13,10 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import { useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -34,8 +35,7 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
     },
   });
   const router = useRouter();
-  const searchParams = useSearchParams();
-
+  const { fetchUser } = useAuth();
   console.log(action);
 
   const onSubmit = async (data: Schema) => {
@@ -47,6 +47,7 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
           withCredentials: true,
         }
       );
+      await fetchUser();
       action == "login" ? router.replace("/chat") : router.replace("/login");
 
       toast.success(
@@ -78,7 +79,6 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
     const url = new URL(window.location.href);
     url.searchParams.set("action", action == "login" ? "register" : "login");
     router.push(url.toString());
-    router.refresh();
   }, [action]);
 
   return (
