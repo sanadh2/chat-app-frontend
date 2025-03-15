@@ -15,8 +15,7 @@ import {
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
-import Link from "next/link";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const loginSchema = z.object({
@@ -35,7 +34,7 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
     },
   });
   const router = useRouter();
-  const { fetchUser } = useAuth();
+  const { fetchUser, isAuthenticated } = useAuth();
   console.log(action);
 
   const onSubmit = async (data: Schema) => {
@@ -48,7 +47,7 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
         }
       );
       await fetchUser();
-      action == "login" ? router.replace("/chat") : router.replace("/login");
+      router.replace(action === "login" ? "/chat" : "/auth?action=login");
 
       toast.success(
         action == "login"
@@ -80,6 +79,16 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
     url.searchParams.set("action", action == "login" ? "register" : "login");
     router.push(url.toString());
   }, [action]);
+  useEffect(() => {
+    form.reset();
+  }, [action]);
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+    if (isAuthenticated) {
+      router.replace("/chat");
+    }
+  }, [isAuthenticated]);
 
   return (
     <Form {...form}>

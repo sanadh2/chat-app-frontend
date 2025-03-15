@@ -9,7 +9,8 @@ type AuthContextType = {
   user: UserType | null;
   isAuthenticated: boolean;
   logout: () => void;
-  fetchUser: () => void;
+  fetchUser: () => Promise<void>;
+  token: string;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -18,6 +19,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [token, setToken] = useState("");
+
   const router = useRouter();
   const fetchUser = async () => {
     try {
@@ -25,6 +28,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         withCredentials: true,
       });
       setUser(res.data.user);
+      setToken(res.data.token);
       setIsAuthenticated(true);
     } catch (error) {
       setUser(null);
@@ -40,12 +44,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    fetchUser().then(() => router.push("/chat"));
+    fetchUser();
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, isAuthenticated: !!user, logout, fetchUser }}
+      value={{ user, isAuthenticated, logout, fetchUser, token }}
     >
       {!loading && children}
     </AuthContext.Provider>
