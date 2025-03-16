@@ -1,41 +1,53 @@
 "use client";
 import { useAuth } from "@/context/AuthContext";
-import { UserType } from "@/types/user";
-import axiosInstance from "@/utils/axiosInstance";
-import { useQuery } from "@tanstack/react-query";
-
-const fetchUsers = async (): Promise<{
-  success: boolean;
-  users: UserType[];
-}> => {
-  const res = await axiosInstance.get("/auth/users");
-  return res.data;
-};
+import { UserType } from "@/types/models";
+import { Button } from "./ui/button";
+import { Dispatch, SetStateAction } from "react";
+import CreateGroupModel from "./CreateGroupModel";
+import useConversations from "@/useConversations";
 
 export default function SearchUser({
   selectRecipient,
+  selectedRecipient,
 }: {
-  selectRecipient: (userId: string) => void;
+  selectRecipient: Dispatch<SetStateAction<UserType | null>>;
+  selectedRecipient: UserType | null;
 }) {
   const { user } = useAuth();
-  const { data, isLoading } = useQuery({
-    queryKey: ["users"],
-    queryFn: fetchUsers,
-  });
-  console.log(data);
+  const { data } = useConversations();
   return (
-    <div className="w-96 border min-h-[60dvh]">
-      {data?.users
-        .filter((person) => person._id != user?._id)
-        .map((user) => (
-          <li
-            onClick={() => selectRecipient(user._id)}
-            className="list-none text-center py-4 w-full hover:bg-neutral-300 active:bg-neutral-400 focus:bg-neutral-400 ease-in-out duration-500"
-            key={user._id}
+    <div className="w-96 border min-h-[60dvh] flex flex-col">
+      <div className="overflow-y-scroll min-h-[90%] grow">
+        {data?.users
+          .filter((person) => person._id != user?._id)
+          .map((user) => (
+            <Button
+              onClick={() => selectRecipient(user)}
+              className={"list-none h-12 rounded-none text-center py-4 w-full"}
+              variant={
+                selectedRecipient?._id === user._id ? "default" : "secondary"
+              }
+              key={user._id}
+            >
+              {user.username}
+            </Button>
+          ))}
+        {data?.groups.map((group) => (
+          <Button
+            // onClick={() => selectRecipient(user)}
+            className={"list-none h-12 rounded-none text-center py-4 w-full"}
+            // variant={
+            //   selectedRecipient?._id === user._id ? "default" : "secondary"
+            // }
+            key={group._id}
           >
-            {user.username}
-          </li>
+            {group.name}
+          </Button>
         ))}
+      </div>
+      <div className="h-[10%]">
+        <CreateGroupModel />
+      </div>
     </div>
   );
 }

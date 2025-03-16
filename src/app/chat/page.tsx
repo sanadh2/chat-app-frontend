@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef, ChangeEvent } from "react";
 import { createSocket } from "@/lib/socket";
 import { Socket } from "socket.io-client";
-import { UserType } from "@/types/user";
+import { UserType } from "@/types/models";
 
 type Message = {
   sender: UserType;

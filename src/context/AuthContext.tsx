@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import axiosInstance from "@/utils/axiosInstance";
-import { UserType } from "@/types/user";
+import { UserType } from "@/types/models";
 import { useRouter } from "next/navigation";
 
 type AuthContextType = {

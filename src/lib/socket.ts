@@ -1,11 +1,15 @@
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
+let socket: Socket | null = null;
 
 export const createSocket = (token: string) => {
-  return io("http://localhost:5000", {
-    autoConnect: false,
-    transports: ["websocket"],
-    auth: {
-      token: token,
-    },
-  });
+  if (!socket) {
+    return io("http://localhost:5000", {
+      autoConnect: false,
+      transports: ["websocket"],
+      auth: {
+        token: token,
+      },
+    });
+  }
+  return socket;
 };
