@@ -20,7 +20,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState("");
-
   const router = useRouter();
   const fetchUser = async () => {
     try {
@@ -31,8 +30,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setToken(res.data.token);
       setIsAuthenticated(true);
     } catch (error) {
+      console.log(error);
       setUser(null);
       setIsAuthenticated(false);
+      router.replace("/auth?action=login");
     } finally {
       setLoading(false);
     }

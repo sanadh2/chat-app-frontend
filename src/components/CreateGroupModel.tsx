@@ -9,7 +9,7 @@ import {
 
 import { Button } from "./ui/button";
 import { UsersIcon } from "lucide-react";
-import useConversations from "@/useConversations";
+import useConversations from "@/hooks/useConversations";
 import { useCallback, useState, useEffect, ChangeEvent } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
@@ -35,7 +35,7 @@ export default function CreateGroupModel() {
         prev.includes(user._id) ? prev : [...prev, user._id]
       );
     }
-  }, []);
+  }, [user?._id]);
 
   const createGroup = async () => {
     console.log("Selected Members:", selectedMembers);

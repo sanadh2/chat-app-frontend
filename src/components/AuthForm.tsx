@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
 import { useCallback, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { isAxiosError } from "axios";
 
 const loginSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
@@ -39,7 +40,7 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
 
   const onSubmit = async (data: Schema) => {
     try {
-      const res = await axiosInstance.post(
+      await axiosInstance.post(
         action == "login" ? "/auth/login" : "/auth/register",
         data,
         {
@@ -57,17 +58,19 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
           richColors: true,
         }
       );
-    } catch (error: any) {
-      const errorMessage =
-        error?.response?.data?.msg || "Something went wrong!";
-      toast.error(
-        action == "login"
-          ? `Login failed... ${errorMessage}`
-          : `user creation failed... ${errorMessage}`,
-        {
-          richColors: true,
-        }
-      );
+    } catch (error) {
+      if (isAxiosError(error)) {
+        const errorMessage =
+          error?.response?.data?.msg || "Something went wrong!";
+        toast.error(
+          action == "login"
+            ? `Login failed... ${errorMessage}`
+            : `user creation failed... ${errorMessage}`,
+          {
+            richColors: true,
+          }
+        );
+      }
       console.error(error);
     } finally {
       form.reset();
@@ -78,17 +81,18 @@ export default function AuthForm({ action }: { action: "login" | "register" }) {
     const url = new URL(window.location.href);
     url.searchParams.set("action", action == "login" ? "register" : "login");
     router.push(url.toString());
-  }, [action]);
+  }, [action, router]);
+
   useEffect(() => {
     form.reset();
-  }, [action]);
+  }, [action, form]);
 
   useEffect(() => {
     console.log(isAuthenticated);
     if (isAuthenticated) {
       router.replace("/chat");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, router]);
 
   return (
     <Form {...form}>

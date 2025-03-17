@@ -6,9 +6,11 @@ export type UserType = {
 };
 
 export type MessageType = {
-  sender: string;
-  receiver: string;
+  sender: UserType;
+  receiver?: UserType;
+  group?: GroupType;
   content: string;
+  isRead: boolean;
   createdAt: string;
 };
 

@@ -3,7 +3,7 @@ let socket: Socket | null = null;
 
 export const createSocket = (token: string) => {
   if (!socket) {
-    return io("http://localhost:5000", {
+    socket = io("http://localhost:5000", {
       autoConnect: false,
       transports: ["websocket"],
       auth: {
