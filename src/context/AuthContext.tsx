@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 type AuthContextType = {
   user: UserType | null;
   isAuthenticated: boolean;
-  logout: () => void;
+  logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
   token: string;
 };
