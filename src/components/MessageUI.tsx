@@ -110,7 +110,7 @@ export default function MessageUI({
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
-  }, [token, recipient, fetchMessages, isGroupChat, user?._id]);
+  }, [token, recipient, fetchMessages, isGroupChat, user]);
 
   const handleSendMessage = () => {
     if (newMessage.trim() && recipient) {
@@ -173,12 +173,12 @@ export default function MessageUI({
           ...recipient,
           members,
         };
-        isGroupChat && selectRecipient(newRecipient);
+        selectRecipient(newRecipient);
       }
     } catch (error) {
       console.error("Error fetching messages:", error);
     }
-  }, [recipient, isGroupChat]);
+  }, [recipient, isGroupChat, selectRecipient, user]);
 
   return (
     <div className="flex flex-col gap-2 h-full p-3 md:p-0">

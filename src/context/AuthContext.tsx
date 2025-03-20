@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import axiosInstance from "@/utils/axiosInstance";
 import { UserType } from "@/types/models";
 import { useRouter } from "next/navigation";
@@ -21,7 +27,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [token, setToken] = useState("");
   const router = useRouter();
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await axiosInstance.get("/auth/me", {
         withCredentials: true,
@@ -37,7 +43,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [router]);
 
   const logout = async () => {
     await axiosInstance.post("/auth/logout");
@@ -46,7 +52,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
 
   return (
     <AuthContext.Provider
